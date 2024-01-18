@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import tinfo.project.tinfo482.entity.Address;
 
 @Entity
 @Data
@@ -27,6 +28,9 @@ public class Member {
 
     @Column
     private String refreshToken;
+
+    @OneToOne
+    private Address address;
 
 
 

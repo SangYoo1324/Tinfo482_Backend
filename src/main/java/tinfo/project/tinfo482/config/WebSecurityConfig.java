@@ -47,13 +47,13 @@ public class WebSecurityConfig {
                         // triggered when authenticated user tries resources have more authorization(403)
                         .accessDeniedHandler(jwtAccessDeniedHandler))
                 .authorizeHttpRequests(httpRequest->httpRequest
-//                        .requestMatchers("/api/login/**","/api/signup/**", String.valueOf(HttpMethod.OPTIONS)).permitAll()
-//                        .requestMatchers("/api/profile/**","/api/user/**").hasRole("USER")
-//                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/login/**","/api/signup/**", "/api/mfa/validate/**", String.valueOf(HttpMethod.OPTIONS)).permitAll()
+                        .requestMatchers("/api/profile/**","/api/user/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll()
 
                 )
-//                .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
 
         ;
 

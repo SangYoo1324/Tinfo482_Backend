@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tinfo.project.tinfo482.entity.Address;
 import tinfo.project.tinfo482.functionalities.auth.repo.MemberRepository;
 import tinfo.project.tinfo482.functionalities.auth.dto.MemberRequestDto;
 import tinfo.project.tinfo482.functionalities.auth.dto.MemberResponseDto;
@@ -17,6 +18,7 @@ import tinfo.project.tinfo482.functionalities.auth.entity.Member;
 import tinfo.project.tinfo482.functionalities.auth.jwt.TokenProvider;
 import tinfo.project.tinfo482.functionalities.mail.service.MailService;
 import tinfo.project.tinfo482.functionalities.redis.RedisUtilService;
+import tinfo.project.tinfo482.repo.AddressRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +28,7 @@ public class AuthService {
     private final AuthenticationManagerBuilder managerBuilder;
 
     private final MemberRepository memberRepository;
+    private final AddressRepository addressRepository;
     private final PasswordEncoder passwordEncoder;
 
     private final TokenProvider tokenProvider;
@@ -42,8 +45,15 @@ public class AuthService {
             log.error("Already Registered User");
             return MemberResponseDto.of(memberRepository.findByEmail(requestDto.getEmail()).orElse(null));
         }else{
+
+            Address userAddress =addressRepository.save(Address.builder()
+                            .address1(requestDto.getAddress().getAddress1())
+                            .state(requestDto.getAddress().getState())
+                            .city(requestDto.getAddress().getCity())
+                            .zipCode(requestDto.getAddress().getZipCode())
+                    .build());
             //save new user info to DB
-            Member member = requestDto.toMember(passwordEncoder);
+            Member member = requestDto.toMember(passwordEncoder, userAddress);
             return MemberResponseDto.of(memberRepository.save(member));
         }
     }
@@ -76,7 +86,7 @@ public class AuthService {
 
 
     public MemberResponseDto simpleLogin(MemberRequestDto requestDto) throws Exception {
-      Member member = memberRepository.findByUsername(requestDto.getUsername()).orElseThrow(()->new Exception("cannot find the username"));
+      Member member = memberRepository.findByEmail(requestDto.getEmail()).orElseThrow(()->new Exception("cannot find the username"));
 
       if(passwordEncoder.matches(requestDto.getPassword(), member.getPassword())){
           mailService.sendAuthEmail(member.getEmail());

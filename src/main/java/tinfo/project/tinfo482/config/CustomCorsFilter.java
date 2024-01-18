@@ -1,6 +1,7 @@
 package tinfo.project.tinfo482.config;
 
 import jakarta.servlet.*;
+import jakarta.servlet.FilterConfig;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,6 +20,7 @@ public class CustomCorsFilter implements Filter {
     @Value("${dev.env.allowed.origin}")
     private String allowedOrigin;
 
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
     }
@@ -35,15 +37,15 @@ public class CustomCorsFilter implements Filter {
         response.setHeader("Access-Control-Allow-Headers", "*");
 
         // pass through preflight request with OPTIONS
-        if("OPTIONS".equalsIgnoreCase(request.getMethod())){
-            response.setStatus(HttpServletResponse.SC_OK);
-        }else{
-            filterChain.doFilter(req,res);
+        if("OPTIONS".equalsIgnoreCase(request.getMethod())) {// if request's method = OPTIONS
+            response.setStatus(HttpServletResponse.SC_OK); // end  filterChain and proceed with 200 status
+        }else {
+            filterChain.doFilter(req, res);
         }
     }
 
     @Override
     public void destroy() {
-        Filter.super.destroy();
+
     }
 }
