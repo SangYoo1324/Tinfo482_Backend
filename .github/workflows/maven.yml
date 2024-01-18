@@ -10,9 +10,12 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: master
+    branches: ["master"]
   pull_request:
-    branches: master
+    branches: ["master"]
+    # Permission can be added at job level or workflow level
+    permissions:
+      contents: write   # This is required to create/push the new git tag
 jobs:
   build:
 
