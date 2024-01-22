@@ -29,9 +29,10 @@ public class Member {
     @Column
     private String refreshToken;
 
-    @OneToOne
+    @OneToOne(optional = true, cascade = CascadeType.ALL)
     private Address address;
 
+    private String provider;
 
 
 }
