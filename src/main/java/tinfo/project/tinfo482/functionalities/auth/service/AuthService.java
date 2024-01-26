@@ -20,6 +20,9 @@ import tinfo.project.tinfo482.functionalities.mail.service.MailService;
 import tinfo.project.tinfo482.functionalities.redis.RedisUtilService;
 import tinfo.project.tinfo482.repo.AddressRepository;
 
+import java.sql.Timestamp;
+import java.util.NoSuchElementException;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -110,7 +113,8 @@ public class AuthService {
           // provider != null means it's social login
           if(requestDto.getProvider() !=null)
               // only socialLogin returns password(Randomly generated)
-          return MemberResponseDto.builder().email(member.getEmail()).username(member.getUsername()).provider(requestDto.getProvider()).password(requestDto.getPassword()).build();
+              // password should be null for the response!!!
+          return MemberResponseDto.builder().email(member.getEmail()).username(member.getUsername()).provider(requestDto.getProvider()).password(null).build();
 
 
           return MemberResponseDto.builder().email(member.getEmail()).username(member.getUsername()).build();
@@ -159,4 +163,13 @@ public class AuthService {
         memberRequestDto.setPassword(member.getPassword());
         return validation(memberRequestDto);
     }
+
+    public MemberResponseDto fetchUserByEmail(String email) throws Exception {
+        Member member = memberRepository.findByEmail(email).orElseThrow(()->new NoSuchElementException("Cannot find user with given username"));
+
+        return MemberResponseDto.secureMemberResponseDto(member);
+    }
+
+
+
 }
