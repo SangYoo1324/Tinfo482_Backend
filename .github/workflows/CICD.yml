@@ -42,7 +42,7 @@ jobs:
     steps:
       - name: Set target IP
         run: |
-          STATUS=$(curl -o /dev/null -w "%{http_code}" "http://100.21.105.141/env")
+          STATUS=$(curl -o /dev/null -w "%{http_code}" "http://100.21.105.141/env" || true)
           echo $STATUS
           if [ $STATUS = 200 ]; then
             CURRENT_UPSTREAM=$(curl -s "http://100.21.105.141/env")
