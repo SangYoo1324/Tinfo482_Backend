@@ -1,10 +1,11 @@
 spring:
   profiles:
-    active: local
+    active: test
     group:
-      local: local
-      blue: blue
-      green: green
+      test: test
+      local: local, common
+      blue: blue, common
+      green: green, common
 
 server:
   env: blue
@@ -46,3 +47,46 @@ server:
 serverName: green_server
 
 ---
+
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/enterprise_1
+    username: sam
+    password: Qwdf3696!
+  jpa:
+    show_sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    hibernate:
+      ddlAuto: create
+server:
+  port: 8080
+  serverAddress: localhost
+
+serverName: test_server
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: common
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://rds-demo.cjykyawcgbun.us-west-2.rds.amazonaws.com/enterprise_2
+    username: sam
+    password: Qwdf3696!
+  jpa:
+    show_sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    hibernate:
+      ddlAuto: create
+
+    showSql: true

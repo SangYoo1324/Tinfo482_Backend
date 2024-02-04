@@ -1,13 +1,48 @@
 package tinfo.project.tinfo482.entity.inventory;
 
-public class Flower {
+
+import jakarta.persistence.*;
+import lombok.*;
+import tinfo.project.tinfo482.dto.inventory.AccDto;
+import tinfo.project.tinfo482.dto.inventory.FlowerDto;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@DiscriminatorValue("flower_indicator")
+public class Flower extends Item{
+
     //Birthday, Wedding, Graduation etc...
-    private String Category;
+    private String category;
 
-    private String name;
+    @Lob
+    private String content;
 
-    private int stock;
+    @OneToMany(mappedBy = "flower", fetch = FetchType.EAGER)
+    private List<CompleteItem> completeItemList = new ArrayList<>();
 
+    @Builder
+    public Flower(Long id, Long price, String name, int stock, String content, String category, String img_url) {
+        super(id, price, name, stock, img_url);
+        this.content = content;
+        this.category = category;
+    }
 
+    public FlowerDto toFlowerDto(){
+        return FlowerDto.builder()
+                .id(this.id)
+                .price(this.price)
+                .name(this.name)
+                .stock(this.stock)
+                .price(this.price)
+                .content(this.content)
+                .category(this.category)
+                .img_url(this.img_url)
+                .build();
+    }
 
 }

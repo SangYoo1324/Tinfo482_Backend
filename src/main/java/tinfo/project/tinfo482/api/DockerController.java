@@ -1,8 +1,7 @@
-package tinfo.project.tinfo482;
+package tinfo.project.tinfo482.api;
 
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,7 +33,7 @@ public class DockerController {
         resp.put("serverPort", serverPort);
         resp.put("env", env);
 
-        return ResponseEntity.status(HttpStatus.OK).body(resp);
+        return ResponseEntity.status(HttpStatus.OK).body("resp");
     }
 
     @GetMapping("/env")
@@ -42,7 +41,7 @@ public class DockerController {
 
         System.out.println("Test for common profile applied"+login_persist_time);
 
-        return ResponseEntity.status(HttpStatus.OK).body(env);
+        return ResponseEntity.status(HttpStatus.OK).body("env");
     }
 
 }

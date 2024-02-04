@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <title>Document</title>
+</head>
+<body>
+
+
+<input type="file" id="file-input">
+<button id="submit-btn">Submit</button>
+
+</body>
+</html>
+
+<script>
+
+    document.getElementById('submit-btn').addEventListener('click',function (){
+        console.log('click!');
+        uploadFile();
+    });
+
+
+
+
+    function uploadFile(){
+
+        let fileInput = document.getElementById('file-input');
+
+        let file = fileInput.files[0];
+
+        if(!file){
+            alert("File input is empty");
+            return;
+        }
+
+        let formData = new FormData();
+
+        formData.append('file',file);
+        formData.append('url', "testUrl");
+
+
+        let boundary ='---------------------------' + Date.now().toString(16);
+    //     fetch('/s3/test', {
+    //         method: 'POST',
+    //         body: formData,
+    //
+    //     })
+    //             .then(response => response.json())
+    //             .then(data => {
+    //                 console.log('Response data:', data);
+    //             })
+    //             .catch(error => {
+    //                 console.error('Error:', error);
+    //             });
+    //
+
+        $.ajax({
+            data: formData,
+            type: "POST",
+            url: "/api/image/upload",
+            cache: false,
+            contentType: false,
+            enctype: 'multipart/form-data',
+            processData: false,
+            success: function (url) {
+                alert("Success uploading event POST :::::" );
+                console.log(url);
+                // window.location.reload();
+            },
+            error: function (err) {
+                alert("error occured. Please check if you uploaded the pic or pushed no image button");
+            }
+        });
+    }
+
+
+
+
+</script>
