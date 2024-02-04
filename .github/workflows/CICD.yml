@@ -26,7 +26,7 @@ jobs:
           echo ${{ secrets.APPLLICATION_YML }} | base64 --decode > ./src/main/resources/application.yml
           cat ./src/main/resources/application.properties
           chmod 777 ./mvnw
-          ./mvnw clean package -Dtestskip
+          ./mvnw clean package -Dtestskip=true
 
       - name: Login to DockerHub
         uses: docker/login-action@v3
