@@ -41,7 +41,7 @@ public class DockerController {
 
         System.out.println("Test for common profile applied"+login_persist_time);
 
-        return ResponseEntity.status(HttpStatus.OK).body("env");
+        return ResponseEntity.status(HttpStatus.OK).body(env);
     }
 
 }
