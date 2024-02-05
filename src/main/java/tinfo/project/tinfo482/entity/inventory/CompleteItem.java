@@ -20,19 +20,21 @@ public class CompleteItem {
     private Long id;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name="flower_id", referencedColumnName = "id")
+    @JoinColumn(name="flower_id", referencedColumnName = "id", nullable = true)
     private Flower flower;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name="acc_id", referencedColumnName = "id")
+    @JoinColumn(name="acc_id", referencedColumnName = "id", nullable = true)
+
     private Acc acc;
 
 
-    public CompleteItemDto toCompleteItemDto(){
-        return CompleteItemDto.builder()
-                .id(this.id)
-                .flowerDto(this.flower.toFlowerDto())
-                .accDto(this.acc.toAccDto())
-                .build();
+    public void removeAcc(){
+        this.acc= null;
     }
+
+    public void removeFlower(){
+        this.flower= null;
+    }
+
 }

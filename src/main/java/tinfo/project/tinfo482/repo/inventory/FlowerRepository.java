@@ -6,5 +6,5 @@ import tinfo.project.tinfo482.entity.inventory.Flower;
 import java.util.Optional;
 
 public interface FlowerRepository extends JpaRepository<Flower, Long> {
-
+    void deleteAllByContent(String content);
 }

@@ -7,14 +7,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 public class CompleteItemDto {
 
-    // completeItem ID
-    private Long id;
-
-    private AccDto accDto;
+    private List<AccDto> accDto;
 
     private FlowerDto flowerDto;
 

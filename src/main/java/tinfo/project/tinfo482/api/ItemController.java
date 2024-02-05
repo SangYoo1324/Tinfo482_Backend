@@ -26,15 +26,40 @@ public class ItemController {
 
     private final ItemService itemService;
 
-    //Fetching Flowers
+    //Fetching all Accs
+    @GetMapping("/accs")
+    public ResponseEntity<?> fetch_all_accs(){
+        return ResponseEntity.status(HttpStatus.OK).body(itemService.fetch_all_accs());
+    }
 
+    //Fetching targetAcc
+    @GetMapping("/acc/{acc_id}")
+    public ResponseEntity<?> fetch_target_acc(@PathVariable("acc_id")Long acc_id){
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(itemService.fetch_target_acc(acc_id));
+        } catch (DataNotFoundException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorDto.builder().errorCode(500).description("internal server Error"));
+        }
+    }
 
-    //Fetching target Flower
-
-    //Fetching target Accs
-
+    //Fetching target completeItem
+    @GetMapping("/item/{flower_id}")
+    public ResponseEntity<?> fetch_target_item(@PathVariable("flower_id") Long flower_id){
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(itemService.fetch_target_item(flower_id));
+        } catch (DataNotFoundException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorDto.builder().errorCode(500).description("internal server Error"));
+        }
+    }
 
     //Fetching All-Items
+    @GetMapping("/items")
+    public ResponseEntity<?> fetch_all_items(){
+        return ResponseEntity.status(HttpStatus.OK).body(itemService.fetch_all_complete_items());
+    }
+
 
 
     //Posting Acc
@@ -77,19 +102,22 @@ public class ItemController {
                                                @PathVariable("acc_id") Long acc_id) {
 
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(itemService.relateAccToFlowerService(flower_id,acc_id));
+            itemService.relateAccToFlowerService(flower_id,acc_id);
+            return ResponseEntity.status(HttpStatus.OK).body(new HashMap<String,String>(){{
+                put("resp", "successfully connected acc id"+acc_id+" with "+"flower id "+flower_id);
+            }});
         } catch (DataNotFoundException e) {
             e.printStackTrace();
             return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorDto.builder().errorCode(500).description("data not found").build());
         }
     }
 
-    //Deleting target Flower
+    //completely remove flower (which means also remove all completeItem related to flower)
     @DeleteMapping("/flower/{flower_id}")
     public ResponseEntity<?> deleteFlower(@PathVariable Long flower_id){
 
         try {
-            itemService.deleteTargetFlower(flower_id);
+            itemService.complete_remove_flower(flower_id);
         } catch (DataNotFoundException e) {
             e.printStackTrace();
             return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorDto.builder().errorCode(500).description("cannot delete flower").build());
@@ -107,10 +135,61 @@ public class ItemController {
 
 
     //Deleting target Acc
+    @DeleteMapping("/acc/{acc_id}")
+    public ResponseEntity<?> deleteAcc(@PathVariable Long acc_id){
 
+        try {
+            itemService.deleteTargetAcc(acc_id);
+        } catch (DataNotFoundException e) {
+            e.printStackTrace();
+            return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorDto.builder().errorCode(500).description("cannot delete flower").build());
+        }
+
+
+
+        return ResponseEntity.status(HttpStatus.OK).body(new HashMap<String,String>(){{
+            put("resp", "successuflly deleted acc & closed relationship to parent table 'complteItem'");
+        }});
+
+
+    }
 
 
     //remove target Acc from target Flower's Recommended List
+    @DeleteMapping("/completeitem/remove/all/acc/{flower_id}")
+    public ResponseEntity<?> deleteAccFromFlower(@PathVariable Long flower_id){
+
+        try {
+            itemService.remove_all_acc_from_flower(flower_id);
+        } catch (DataNotFoundException e) {
+            e.printStackTrace();
+            return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorDto.builder().errorCode(500).description("cannot delete flower").build());
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(new HashMap<String,String>(){{
+            put("resp", "successuflly deleted acc & closed relationship to parent table 'complteItem'");
+        }});
+
+
+    }
+
+
+    //test Data Generate
+    @GetMapping("/test/generate")
+    public ResponseEntity<?> testGen(){
+        itemService.generateDummyData();
+        return ResponseEntity.status(HttpStatus.OK).body(new HashMap<String,String>(){{
+            put("resp","successfully generated test data");
+        }});
+    }
+
+    //test Data Delete
+    @DeleteMapping("/test/delete")
+    public ResponseEntity<?> testDel(){
+        itemService.deleteDummyData();
+        return ResponseEntity.status(HttpStatus.OK).body(new HashMap<String,String>(){{
+            put("resp","successfully generated test data");
+        }});
+    }
 
 
 }

@@ -9,6 +9,8 @@ import java.util.Optional;
 
 public interface CompleteItemRepository extends JpaRepository<CompleteItem, Long> {
 
-   List<CompleteItem> findAllByFlower_Id(Long flower_id);
+   List<CompleteItem>deleteAllByFlower_Content(String content);
 
+   List<CompleteItem> findAllByFlower_Id(Long flower_id);
+   List<CompleteItem> findAllByAcc_Id(Long acc_id);
 }

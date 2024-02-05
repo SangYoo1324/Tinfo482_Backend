@@ -4,10 +4,13 @@ import jakarta.persistence.*;
 import lombok.*;
 import tinfo.project.tinfo482.dto.inventory.AccDto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
+
 @DiscriminatorValue("acc_indicator")
 
 public class Acc extends Item{
@@ -15,11 +18,15 @@ public class Acc extends Item{
     @Lob
     private String content;
 
+    @OneToMany(mappedBy = "acc", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<CompleteItem> completeItemList = new ArrayList<CompleteItem>();
+
 
     @Builder
-    public Acc(Long id, Long price, String name, int stock, String content, String img_url) {
+    public Acc(Long id, Long price, String name, int stock, String content, String img_url, List<CompleteItem> completeItemList) {
         super(id, price, name, stock, img_url);
         this.content = content;
+        this.completeItemList = completeItemList;
     }
 
 
