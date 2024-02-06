@@ -9,6 +9,7 @@ import tinfo.project.tinfo482.functionalities.auth.entity.Member;
 @NoArgsConstructor
 @Builder
 public class MemberResponseDto {
+    private Long id;
     private String email;
     private String username;
     private String password;
@@ -20,6 +21,7 @@ public class MemberResponseDto {
         // preventing address null-pointer
         if(member.getAddress() !=null)
         return MemberResponseDto.builder()
+                .id(member.getId())
                 .email(member.getEmail())
                 .username(member.getUsername())
                 .password(member.getPassword())
@@ -28,6 +30,7 @@ public class MemberResponseDto {
                 .build();
 
         return MemberResponseDto.builder()
+                .id(member.getId())
                 .email(member.getEmail())
                 .username(member.getUsername())
                 .password(member.getPassword())
@@ -40,12 +43,14 @@ public class MemberResponseDto {
 
         if(member.getAddress() !=null)
       return   MemberResponseDto.builder()
+              .id(member.getId())
                 .email(member.getEmail())
                 .username(member.getUsername())
                 .address(member.getAddress().toAddressDto())
                  .provider(member.getProvider())
                 .build();
         return MemberResponseDto.builder()
+                .id(member.getId())
                 .email(member.getEmail())
                 .username(member.getUsername())
 //                .address(member.getAddress().toAddressDto())

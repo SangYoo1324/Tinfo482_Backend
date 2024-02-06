@@ -22,11 +22,11 @@ public class AddressController {
     private final AddressService addressService;
 
 
-    @GetMapping("/address/{username}")
-    public ResponseEntity<?> getAddress(@PathVariable("username") String username){
+    @GetMapping("/address/{id}")
+    public ResponseEntity<?> getAddress(@PathVariable("id") Long id){
 
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(addressService.getAddress(username));
+            return ResponseEntity.status(HttpStatus.OK).body(addressService.getAddress(id));
         } catch (DataNotFoundException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -34,10 +34,10 @@ public class AddressController {
         }
     }
 
-    @PatchMapping("/address/{username}")
-    public ResponseEntity<?> updateAddress(@PathVariable("username") String username, @RequestBody AddressDto addressDto){
+    @PatchMapping("/address/{id}")
+    public ResponseEntity<?> updateAddress(@PathVariable("id") Long id, @RequestBody AddressDto addressDto){
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(addressService.updateAddress(username, addressDto));
+            return ResponseEntity.status(HttpStatus.OK).body(addressService.updateAddress(id, addressDto));
         } catch (DataNotFoundException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -45,11 +45,11 @@ public class AddressController {
         }
     }
 
-    @DeleteMapping("/address/{username}")
-    public ResponseEntity<?> detachAddress(@PathVariable("username") String username){
+    @DeleteMapping("/address/{id}")
+    public ResponseEntity<?> detachAddress(@PathVariable("id") Long id){
 
         try {
-            addressService.detachExistingAddr(username);
+            addressService.detachExistingAddr(id);
             return ResponseEntity.status(HttpStatus.OK).body(new HashMap<String,String>(){{
                 put("resp", "successfully deleted");
             }});

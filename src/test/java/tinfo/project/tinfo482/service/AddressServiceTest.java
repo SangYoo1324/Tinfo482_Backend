@@ -42,7 +42,7 @@ class AddressServiceTest {
 
 
         try {
-           AddressDto address= addressService.getAddress(member.getUsername());
+           AddressDto address= addressService.getAddress(member.getId());
            log.info(Optional.ofNullable(address).map(AddressDto::getAddress1).orElse(null));
 
         } catch (DataNotFoundException e) {
@@ -65,7 +65,7 @@ class AddressServiceTest {
 
 
         try {
-            AddressDto address= addressService.updateAddress(member.getUsername(),     AddressDto.builder()
+            AddressDto address= addressService.updateAddress(member.getId(),     AddressDto.builder()
                     .address1("1414 S 235th pl")
                     .city("Des Moines")
                     .state("WA")

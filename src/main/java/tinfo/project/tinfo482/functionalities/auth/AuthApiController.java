@@ -124,6 +124,7 @@ public class AuthApiController {
 
 
         else{
+            log.error("Verification code not matching!");
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 

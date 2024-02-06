@@ -27,15 +27,15 @@ public class AddressService {
     private final EntityManager entityManager;
 
 
-    public AddressDto getAddress(String username) throws DataNotFoundException {
-       Member member = memberRepository.findByUsername(username).orElseThrow(()->new DataNotFoundException("member with username not found"));
-
+    public AddressDto getAddress(Long id) throws DataNotFoundException {
+       Member member = memberRepository.findById(id).orElseThrow(()->new DataNotFoundException("member with username not found"));
+        log.info(member.getAddress().getAddress1());
         return member.getAddress() ==null ? null : member.getAddress().toAddressDto();
     }
 
-    public AddressDto updateAddress(String username, AddressDto addressDto) throws DataNotFoundException {
+    public AddressDto updateAddress(Long id, AddressDto addressDto) throws DataNotFoundException {
 
-        Member member = memberRepository.findByUsername(username).orElseThrow(()->new DataNotFoundException("member with username not found"));
+        Member member = memberRepository.findById(id).orElseThrow(()->new DataNotFoundException("member with username not found"));
 
 
         member.setAddress(entityManager.merge(
@@ -66,9 +66,9 @@ public class AddressService {
         return member.getAddress().toAddressDto();
     }
 
-    public void detachExistingAddr(String username) throws DataNotFoundException {
+    public void detachExistingAddr(Long id) throws DataNotFoundException {
 
-        Member member = memberRepository.findByUsername(username).orElse(null);
+        Member member = memberRepository.findById(id).orElse(null);
 
         if(member !=null){
             member.setAddress(null);

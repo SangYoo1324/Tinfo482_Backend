@@ -69,6 +69,10 @@ public class TokenProvider {
         Date tokenExpiresIn = new Date(now+ACCESS_TOKEN_EXPIRE_TIME);
         log.info("Token Expires in :"+ tokenExpiresIn);
 
+       Member member= memberRepository.findByUsername(authentication.getName()).orElse(null);
+       if(member ==null){
+           log.error("Warning!! cannot find member from DB");
+       }
 
         //Actual token building process
         String accessToken = Jwts.builder()
@@ -89,6 +93,7 @@ public class TokenProvider {
         String username = currentMember.getUsername();
         String email =  currentMember.getEmail();
         return TokenDto.builder()
+                .id(member.getId())
                 .grantType(BEARER_TYPE)
                 .accessToken(accessToken)
                 .tokenExpiresIn(tokenExpiresIn.getTime())
