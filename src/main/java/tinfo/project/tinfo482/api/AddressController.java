@@ -11,6 +11,9 @@ import tinfo.project.tinfo482.dto.ErrorDto;
 import tinfo.project.tinfo482.exceptions.DataNotFoundException;
 import tinfo.project.tinfo482.service.AddressService;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -32,7 +35,7 @@ public class AddressController {
     }
 
     @PatchMapping("/address/{username}")
-    public ResponseEntity<?> updateAddress(@PathVariable("username") String username, AddressDto addressDto){
+    public ResponseEntity<?> updateAddress(@PathVariable("username") String username, @RequestBody AddressDto addressDto){
         try {
             return ResponseEntity.status(HttpStatus.OK).body(addressService.updateAddress(username, addressDto));
         } catch (DataNotFoundException e) {
@@ -40,6 +43,23 @@ public class AddressController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ErrorDto.builder().errorCode(500).description("cannot find address with given username"));
         }
+    }
+
+    @DeleteMapping("/address/{username}")
+    public ResponseEntity<?> detachAddress(@PathVariable("username") String username){
+
+        try {
+            addressService.detachExistingAddr(username);
+            return ResponseEntity.status(HttpStatus.OK).body(new HashMap<String,String>(){{
+                put("resp", "successfully deleted");
+            }});
+        } catch (DataNotFoundException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ErrorDto.builder().errorCode(500).description("cannot find address with given username"));
+        }
+
+
     }
 
 }

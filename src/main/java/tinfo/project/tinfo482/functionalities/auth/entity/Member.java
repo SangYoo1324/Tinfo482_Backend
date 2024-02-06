@@ -29,7 +29,8 @@ public class Member {
     @Column
     private String refreshToken;
 
-    @OneToOne(optional = true, cascade = CascadeType.ALL)
+    @OneToOne(optional = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @JoinColumn(name="address_id", nullable = true)
     private Address address;
 
     private String provider;
