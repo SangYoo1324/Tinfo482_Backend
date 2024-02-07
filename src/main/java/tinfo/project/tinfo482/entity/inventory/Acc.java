@@ -23,8 +23,8 @@ public class Acc extends Item{
 
 
     @Builder
-    public Acc(Long id, Long price, String name, int stock, String content, String img_url, List<CompleteItem> completeItemList) {
-        super(id, price, name, stock, img_url);
+    public Acc(Long id, Long price, String name, int stock, String content, String img_url, List<CompleteItem> completeItemList, boolean delivery) {
+        super(id, price, name, stock, img_url, delivery);
         this.content = content;
         this.completeItemList = completeItemList;
     }

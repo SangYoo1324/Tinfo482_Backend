@@ -22,12 +22,13 @@ public class Flower extends Item{
     @Lob
     private String content;
 
+
     @OneToMany(mappedBy = "flower", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<CompleteItem> completeItemList = new ArrayList<CompleteItem>();
 
     @Builder
-    public Flower(Long id, Long price, String name, int stock, String content, String category, String img_url, List<CompleteItem> completeItemList) {
-        super(id, price, name, stock, img_url);
+    public Flower(Long id, Long price, String name, int stock, String content, String category, String img_url, List<CompleteItem> completeItemList, boolean delivery) {
+        super(id, price, name, stock, img_url, delivery);
         this.content = content;
         this.category = category;
         this.completeItemList = completeItemList;
@@ -43,6 +44,7 @@ public class Flower extends Item{
                 .content(this.content)
                 .category(this.category)
                 .img_url(this.img_url)
+                .delivery(this.delivery)
                 .build();
     }
 

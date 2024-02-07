@@ -23,7 +23,7 @@ public class FlowerDto {
 
     private int stock;
 
-    private List<AccDto> accDtoList;
-
     private String img_url;
+
+    private boolean delivery;
 }

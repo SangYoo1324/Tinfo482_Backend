@@ -27,4 +27,6 @@ public class Item {
     protected int stock;
 
     protected String img_url;
+
+    protected boolean delivery;
 }

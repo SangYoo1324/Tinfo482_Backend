@@ -71,12 +71,14 @@ public class ItemService {
     public FlowerDto postFlower_only_service(FlowerDto flowerDto, MultipartFile file) throws IOException {
        String img_url = s3Service.imageUpload(file);
 
+       log.info("deliverable"+ flowerDto.isDelivery());
         return flowerRepository.save(Flower.builder()
                         .category(flowerDto.getCategory())
                         .img_url(img_url)
                         .stock(flowerDto.getStock())
                         .price(flowerDto.getPrice())
                         .name(flowerDto.getName())
+                        .delivery(flowerDto.isDelivery())
                         .content(flowerDto.getContent())
                 .build()
         ).toFlowerDto();
