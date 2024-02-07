@@ -136,12 +136,24 @@ public class AuthApiController {
     }
 
     @GetMapping("/user/test")
-    public String userAuthTest(){
-        return "This api requires User Authority";
+    public ResponseEntity<?> userAuthTest(){
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new HashMap<String,String>(){{
+                    put("role", "ROLE_USER");
+
+                }}
+        );
     }
     @GetMapping("/admin/test")
-    public String adminAuthTest(){
-        return "This api requires Admin Authority";
+    public ResponseEntity<?> adminAuthTest(){
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new HashMap<String,String>(){{
+                    put("role", "ROLE_ADMIN");
+
+                }}
+        );
     }
 
 }
