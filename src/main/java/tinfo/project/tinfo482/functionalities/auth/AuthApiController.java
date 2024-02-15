@@ -65,7 +65,7 @@ public class AuthApiController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<MemberResponseDto> login(@RequestBody MemberRequestDto requestDto)  {
+    public ResponseEntity<MemberResponseDto> login(@Valid @RequestBody MemberRequestDto requestDto, BindingResult bindingResult)  {
 
         try {
             return ResponseEntity.status(HttpStatus.OK).body(authService.simpleLogin(requestDto));

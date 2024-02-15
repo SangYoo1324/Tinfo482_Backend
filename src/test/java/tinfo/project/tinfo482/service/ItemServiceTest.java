@@ -160,22 +160,23 @@ class ItemServiceTest {
     @DisplayName("Delete target Acc")
     @Transactional
     public void deleteTargetAcc() throws DataNotFoundException {
-        Long acc_id = 3l;
+//        Long acc_id = 3l;
+//
+//        //    List<CompleteItem> targets = completeItemRepository.findAllByAcc_Id(acc_id);
+//        Acc target = accRepository.findById(acc_id).orElseThrow(()-> new DataNotFoundException("flower not found"));
+//        log.info("targetAcc = "+target.getName());
+//        // CompleteItem only with assigned acc_id
+//        // remove relationship by removing child's pk of parent
+//        // accesss child from parent's
+//        target.getCompleteItemList().stream().forEach(e->e.removeAcc());
+//
+//        accRepository.save(target);
+//
+//        completeItemRepository.findAll().stream().forEach(e->{
+//            if(e.getAcc()!=null)
+//            log.info(e.getAcc().getName());});
 
-        //    List<CompleteItem> targets = completeItemRepository.findAllByAcc_Id(acc_id);
-        Acc target = accRepository.findById(acc_id).orElseThrow(()-> new DataNotFoundException("flower not found"));
-        log.info("targetAcc = "+target.getName());
-        // CompleteItem only with assigned acc_id
-        // remove relationship by removing child's pk of parent
-        // accesss child from parent's
-        target.getCompleteItemList().stream().forEach(e->e.removeAcc());
-
-        accRepository.save(target);
-
-        completeItemRepository.findAll().stream().forEach(e->{
-            if(e.getAcc()!=null)
-            log.info(e.getAcc().getName());});
-
+        itemService.deleteTargetAcc(1l);
 
     }
 

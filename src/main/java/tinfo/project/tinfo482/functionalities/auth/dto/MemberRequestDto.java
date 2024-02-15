@@ -17,8 +17,8 @@ import static tinfo.project.tinfo482.functionalities.auth.entity.Role.ROLE_USER;
 @NoArgsConstructor
 @Builder
 public class MemberRequestDto {
-    @NotNull(message = "username key doesn't exist")  // key값조차 없다
-    @NotBlank(message = "email is required field")  // key는 넘어왔는데 value가 없다
+    @NotNull(message = "username key doesn't exist")
+    @NotBlank(message = "email is required field")
     @Size(max = 100, message = "email exceeded the maximum length")
     private String email;
     @NotNull(message = "password key doesn't exist")

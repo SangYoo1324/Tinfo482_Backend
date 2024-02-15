@@ -12,7 +12,9 @@ import tinfo.project.tinfo482.dto.inventory.FlowerDto;
 import tinfo.project.tinfo482.entity.inventory.Acc;
 import tinfo.project.tinfo482.entity.inventory.CompleteItem;
 import tinfo.project.tinfo482.entity.inventory.Flower;
+import tinfo.project.tinfo482.exceptions.CacheNotFoundException;
 import tinfo.project.tinfo482.exceptions.DataNotFoundException;
+import tinfo.project.tinfo482.functionalities.redis.RedisUtilService;
 import tinfo.project.tinfo482.repo.inventory.AccRepository;
 import tinfo.project.tinfo482.repo.inventory.CompleteItemRepository;
 import tinfo.project.tinfo482.repo.inventory.FlowerRepository;
@@ -36,6 +38,9 @@ public class ItemService {
     private final CompleteItemRepository completeItemRepository;
 
     private final S3Service s3Service;
+
+    private final RedisUtilService redisUtilService;
+
 
 
     public void generateDummyData(){
@@ -109,8 +114,7 @@ public class ItemService {
         // accesss child from parent's List<Acc>
         target.getCompleteItemList().stream().forEach(e->e.removeAcc());
 
-        // 이거 빼도 실제 db에 반영되나 확인
-        accRepository.save(target);
+//        accRepository.save(target);
 
         completeItemRepository.findAll().stream().forEach(e->{
             if(e.getAcc()!=null)
@@ -119,6 +123,30 @@ public class ItemService {
 
         accRepository.delete(target);
 
+
+        //Cache update logic
+        List<CompleteItemDto> completeItemDtoList = null;
+        String cacheName = "completeItemDto_list";
+        String cacheKey = "all";
+        try {
+            completeItemDtoList = (List<CompleteItemDto>) redisUtilService.fetchingCache(cacheName, cacheKey);
+
+            completeItemDtoList.stream().forEach(completeItemDto->{
+                // filter deleted acc_id
+                completeItemDto.getAccDto().stream().filter(accDto -> accDto.getId() !=acc_id).collect(Collectors.toList());
+            });
+
+
+        } catch (CacheNotFoundException e) {
+            e.printStackTrace();
+            log.info("cache doesn't exist. Generating CompleteItemDto_list from DB");
+            completeItemDtoList = generate_recent_CompleteItemDtoList();
+
+        }
+        finally{
+            if(completeItemDtoList !=null)
+            redisUtilService.registerCache(cacheName,cacheKey,completeItemDtoList);
+        }
 
     }
 
@@ -213,9 +241,39 @@ public class ItemService {
 
     }
 
+
+
     public List<CompleteItemDto> fetch_all_complete_items(){
 
-        return flowerRepository.findAll().stream().map(flower->
+       String cacheName = "completeItemDto_list";
+       String cacheKey = "all";
+
+        try {
+            // search Cache
+           return (List<CompleteItemDto>) redisUtilService.fetchingCache(cacheName, cacheKey);
+        } catch (CacheNotFoundException e) {
+            e.printStackTrace();
+            log.info("cache not found. searching DB");
+            // forming dto
+            List<CompleteItemDto> data =
+                    generate_recent_CompleteItemDtoList();
+            // register to redisCache
+            redisUtilService.registerCache(cacheName,cacheKey, data );
+
+            return data;
+        }
+
+
+
+
+
+
+    }
+
+
+    // generate_recentCompleteItemDtoList with DB(Not from Cache)
+    private List<CompleteItemDto> generate_recent_CompleteItemDtoList(){
+        return  flowerRepository.findAll().stream().map(flower->
                 CompleteItemDto.builder()
                         .flowerDto(flower.toFlowerDto())
                         .accDto(
@@ -227,8 +285,6 @@ public class ItemService {
                         )
                         .build()
         ).collect(Collectors.toList());
-
-
     }
 
 

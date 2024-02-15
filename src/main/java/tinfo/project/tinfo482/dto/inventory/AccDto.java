@@ -1,9 +1,13 @@
 package tinfo.project.tinfo482.dto.inventory;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Builder
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class AccDto {
 
     private Long id;

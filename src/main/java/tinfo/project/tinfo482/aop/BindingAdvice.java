@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -29,11 +28,12 @@ public class BindingAdvice {
             // method execution
 
        Object[] args =  proceedingJoinPoint.getArgs();
+        log.info(String.valueOf(args.length));
 
        // BindingResult is paired with the @Valid check annotation
        for(Object bindingResult : args){
            if(bindingResult instanceof BindingResult){
-
+                log.info(bindingResult.toString());
                if(((BindingResult) bindingResult).hasErrors()){
                    Map<String,String> erroLogs = new HashMap<>();
                    for(FieldError err: ((BindingResult) bindingResult).getFieldErrors()){
@@ -43,7 +43,6 @@ public class BindingAdvice {
 
            }
         }
-
         try {
             // this is required or method will not proceed
             System.out.println("type: "+ type);
@@ -57,10 +56,45 @@ public class BindingAdvice {
 
     }
 
-//    @Around("execution(* *(..))")
-//    public void executionTimer(){
-//
-//    }
+    @Around("execution( * tinfo.project.tinfo482.functionalities.redis.redisTest.*Service.*(..))")
+    public Object executionTimerTest(ProceedingJoinPoint joinPoint) throws Throwable {
+        long startTime = System.currentTimeMillis();
+
+        try {
+            Object result = joinPoint.proceed();
+            return result;
+        } catch (Throwable e) {
+            e.printStackTrace();
+            throw e;
+
+        } finally {
+            long endTime = System.currentTimeMillis();
+            long executionTime = endTime-startTime;
+            log.info("AOP::::: "+ joinPoint.getSignature()+ " executed in "+executionTime);
+        }
+
+
+    }
+
+    @Around("execution(* tinfo.project.tinfo482.service..*Service.*(..))")
+    public Object ItemServiceExecutionTimer(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        long startTime = System.currentTimeMillis();
+
+        try {
+            Object result = proceedingJoinPoint.proceed();
+            return result;
+        } catch (Throwable e) {
+            e.printStackTrace();
+            throw e;
+
+        } finally {
+            long endTime = System.currentTimeMillis();
+            long executionTime = endTime-startTime;
+            log.info("AOP::::: "+ proceedingJoinPoint.getSignature()+ " executed in "+executionTime);
+        }
+    }
+
+
 
 
 }
