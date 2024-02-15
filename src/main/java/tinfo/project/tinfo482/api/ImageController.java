@@ -23,7 +23,7 @@ public class ImageController {
     private final S3Service s3Service;
 
     @PostMapping("/api/image/upload")
-    public ResponseEntity<?> imageUpload(@RequestParam("file") MultipartFile multipartFile){
+    public ResponseEntity<?> imageUpload(@RequestParam("upload") MultipartFile multipartFile){
         Map<String, Object> map = new HashMap<>();
         try {
             String url = s3Service.imageUpload(multipartFile);
