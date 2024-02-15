@@ -39,4 +39,26 @@ public class ImageController {
         return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(map);
     }
 
+    @PostMapping("/api/image/ck5/upload")
+    public ResponseEntity<?> ck5imageUpload(@RequestParam("upload") MultipartFile multipartFile){
+        Map<String, Object> map = new HashMap<>();
+        try {
+            String url = s3Service.imageUpload(multipartFile);
+
+            Map<String, Object> data = new HashMap<String, Object>();
+            data.put("uploaded",1);
+            data.put("fileName", url);
+            data.put("url", url);
+
+            log.info("url:::"+ url);
+            map.put("image",url);
+            return ResponseEntity.status(HttpStatus.OK).body(data);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        map.put("image","null");
+        return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(map);
+    }
+
 }
