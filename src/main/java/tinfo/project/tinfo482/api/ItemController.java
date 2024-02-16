@@ -26,6 +26,12 @@ public class ItemController {
 
     private final ItemService itemService;
 
+    @GetMapping("/flowers")
+    public ResponseEntity<?> fetch_all_flowers(){
+        return ResponseEntity.status(HttpStatus.OK).body(itemService.fetch_all_flowers());
+    }
+
+
     //Fetching all Accs
     @GetMapping("/accs")
     public ResponseEntity<?> fetch_all_accs(){
