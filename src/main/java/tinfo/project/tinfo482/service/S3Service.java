@@ -23,8 +23,9 @@ import java.util.UUID;
 public class S3Service {
 
     private final S3Config s3Config;
-    private String localLocation = "C:\\Users\\samue\\Downloads\\";
-
+//    private String localLocation = "C:\\Users\\samue\\Downloads\\";
+    @Value("${s3.local.path}")
+    private String localLocation;
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
