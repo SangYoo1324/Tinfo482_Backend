@@ -35,9 +35,12 @@ public class TokenProvider {
     “exp”: “date”}
     **********************/
 
+        @Value("${jwt.duration}")
+        private int duration;
+
         private static final String AUTHORITIES_KEY = "auth";
         private static final String BEARER_TYPE = "bearer";
-        private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000* 60 *30;
+        private long ACCESS_TOKEN_EXPIRE_TIME = 1000* 60;
 
         private final Key key;
 
@@ -66,7 +69,9 @@ public class TokenProvider {
 
         Long now = new Date().getTime();
         // 30min exp time from now
-        Date tokenExpiresIn = new Date(now+ACCESS_TOKEN_EXPIRE_TIME);
+        log.info("duration: "+ duration);
+        System.out.println("ACCESS_TOKEN_EXPIRE_TIME = "+ ACCESS_TOKEN_EXPIRE_TIME*duration);
+        Date tokenExpiresIn = new Date(now+ACCESS_TOKEN_EXPIRE_TIME*duration);
         log.info("Token Expires in :"+ tokenExpiresIn);
 
        Member member= memberRepository.findByUsername(authentication.getName()).orElse(null);

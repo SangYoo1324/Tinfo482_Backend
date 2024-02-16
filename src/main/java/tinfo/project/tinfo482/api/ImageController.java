@@ -44,7 +44,7 @@ public class ImageController {
         Map<String, Object> map = new HashMap<>();
         try {
             String url = s3Service.imageUpload(multipartFile);
-
+            // followed ck5 editor file upload catcher json form
             Map<String, Object> data = new HashMap<String, Object>();
             data.put("uploaded",1);
             data.put("fileName", url);
