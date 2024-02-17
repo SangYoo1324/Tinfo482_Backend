@@ -21,6 +21,7 @@ import tinfo.project.tinfo482.repo.inventory.FlowerRepository;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -278,10 +279,13 @@ public class ItemService {
                         .flowerDto(flower.toFlowerDto())
                         .accDto(
                                 // extract acc Entities from completeItem -> toAccDto
-                                flower.getCompleteItemList().stream().map(completeItem->
+                                flower.getCompleteItemList().stream()
+                                        .map(completeItem->
                                         Optional.ofNullable(completeItem.getAcc())
                                                 .map(Acc::toAccDto).orElse(null)
-                                ).collect(Collectors.toList())
+                                ).filter(Objects::nonNull)
+
+                                        .collect(Collectors.toList())
                         )
                         .build()
         ).collect(Collectors.toList());
