@@ -42,6 +42,8 @@ public class ItemService {
 
     private final RedisUtilService redisUtilService;
 
+    private String cacheName = "completeItemDto_list";
+    private String cacheKey = "all";
 
 
     public void generateDummyData(){
@@ -76,18 +78,27 @@ public class ItemService {
 
     public FlowerDto postFlower_only_service(FlowerDto flowerDto, MultipartFile file) throws IOException {
        String img_url = s3Service.imageUpload(file);
-
-       log.info("deliverable"+ flowerDto.isDelivery());
-        return flowerRepository.save(Flower.builder()
-                        .category(flowerDto.getCategory())
-                        .img_url(img_url)
-                        .stock(flowerDto.getStock())
-                        .price(flowerDto.getPrice())
-                        .name(flowerDto.getName())
-                        .delivery(flowerDto.isDelivery())
-                        .content(flowerDto.getContent())
+        FlowerDto finalOutcome = flowerRepository.save(Flower.builder()
+                .category(flowerDto.getCategory())
+                .img_url(img_url)
+                .stock(flowerDto.getStock())
+                .price(flowerDto.getPrice())
+                .name(flowerDto.getName())
+                .delivery(flowerDto.isDelivery())
+                .content(flowerDto.getContent())
                 .build()
         ).toFlowerDto();
+
+        log.info("updating cache with newly updated Flower");
+        // forming dto
+        List<CompleteItemDto> data =
+                generate_recent_CompleteItemDtoList();
+        // register to redisCache
+        redisUtilService.registerCache(cacheName,cacheKey, data );
+
+
+       log.info("deliverable"+ flowerDto.isDelivery());
+        return finalOutcome;
     }
 
     public void relateAccToFlowerService(Long flower_id, Long acc_id) throws DataNotFoundException {
@@ -98,6 +109,14 @@ public class ItemService {
                 .build();
 
        completeItemRepository.save(completeItem);
+
+        log.info("updating cache with newly linked flower <-> Acc");
+        // forming dto
+        List<CompleteItemDto> data =
+                generate_recent_CompleteItemDtoList();
+        // register to redisCache
+        redisUtilService.registerCache(cacheName,cacheKey, data );
+
 
     }
 
@@ -127,8 +146,6 @@ public class ItemService {
 
         //Cache update logic
         List<CompleteItemDto> completeItemDtoList = null;
-        String cacheName = "completeItemDto_list";
-        String cacheKey = "all";
         try {
             completeItemDtoList = (List<CompleteItemDto>) redisUtilService.fetchingCache(cacheName, cacheKey);
 
@@ -246,8 +263,7 @@ public class ItemService {
 
     public List<CompleteItemDto> fetch_all_complete_items(){
 
-       String cacheName = "completeItemDto_list";
-       String cacheKey = "all";
+
 
         try {
             // search Cache
