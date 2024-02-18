@@ -65,6 +65,17 @@ public class RedisUtilService {
             return dbData;
         }
     }
+
+    public Object registerCache_override(String cacheName, String cacheKey, Object dbData){
+        Cache cache =  cacheManager.getCache(cacheName);
+        log.info("cache doesn't exist.. please handle this exception " +
+                "by fetching data from DB");
+
+        cache.put(cacheKey,dbData);
+
+        return dbData;
+    }
+
     // fetching Cache
     public Object fetchingCache(String cacheName, String cacheKey) throws CacheNotFoundException {
         Cache cache =  cacheManager.getCache(cacheName);
