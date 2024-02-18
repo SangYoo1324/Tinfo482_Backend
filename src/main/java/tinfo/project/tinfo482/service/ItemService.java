@@ -181,6 +181,14 @@ public class ItemService {
         flowerRepository.save(target);
         // 4. remove the target flower
         flowerRepository.delete(target);
+
+        log.info("updating cache with removed flower");
+        // forming dto
+        List<CompleteItemDto> data =
+                generate_recent_CompleteItemDtoList();
+        // register to redisCache
+        redisUtilService.registerCache(cacheName,cacheKey, data );
+
     }
 
     public void deleteTargetFlower(Long flower_id) throws DataNotFoundException {
