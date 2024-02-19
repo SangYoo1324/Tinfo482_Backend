@@ -20,6 +20,7 @@ public class Flower extends Item{
     private String category;
 
     @Lob
+    @Column(columnDefinition = "TEXT")
     private String content;
 
 

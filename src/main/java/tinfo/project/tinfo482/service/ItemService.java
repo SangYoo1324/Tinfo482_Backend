@@ -225,6 +225,12 @@ public class ItemService {
             e.removeAcc();
         });
 
+        log.info("updating cache with removed flower");
+        // forming dto
+        List<CompleteItemDto> data =
+                generate_recent_CompleteItemDtoList();
+        // register to redisCache
+        redisUtilService.registerCache_override(cacheName,cacheKey, data );
 
     }
 
@@ -283,7 +289,7 @@ public class ItemService {
             List<CompleteItemDto> data =
                     generate_recent_CompleteItemDtoList();
             // register to redisCache
-            redisUtilService.registerCache(cacheName,cacheKey, data );
+            redisUtilService.registerCache_override(cacheName,cacheKey, data );
 
             return data;
         }
