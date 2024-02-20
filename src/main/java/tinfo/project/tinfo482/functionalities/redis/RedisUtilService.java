@@ -9,7 +9,9 @@ import org.springframework.cache.CacheManager;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tinfo.project.tinfo482.exceptions.CacheNotFoundException;
 
 import java.time.Duration;
@@ -18,6 +20,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class RedisUtilService {
 
     private final RedisTemplate redisTemplate;
@@ -68,12 +71,17 @@ public class RedisUtilService {
 
     public Object registerCache_override(String cacheName, String cacheKey, Object dbData){
         Cache cache =  cacheManager.getCache(cacheName);
-        log.info("cache doesn't exist.. please handle this exception " +
-                "by fetching data from DB");
+        log.info("Override the registered Cache with given Data");
 
         cache.put(cacheKey,dbData);
 
         return dbData;
+    }
+
+    public void deleteCache(String cacheName,String cacheKey){
+        Cache cache = cacheManager.getCache(cacheName);
+        log.info("delete cache");
+        cache.evictIfPresent(cacheKey);
     }
 
     // fetching Cache

@@ -1,10 +1,13 @@
 package tinfo.project.tinfo482.service;
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 import tinfo.project.tinfo482.dto.inventory.AccDto;
 import tinfo.project.tinfo482.dto.inventory.CompleteItemDto;
@@ -41,6 +44,8 @@ public class ItemService {
     private final S3Service s3Service;
 
     private final RedisUtilService redisUtilService;
+
+    private final EntityManager entityManager;
 
     private String cacheName = "completeItemDto_list";
     private String cacheKey = "all";
@@ -90,11 +95,12 @@ public class ItemService {
         ).toFlowerDto();
 
         log.info("updating cache with newly updated Flower");
-        // forming dto
+        // forming dto (but, doesn't contain the newly added flower)
         List<CompleteItemDto> data =
                 generate_recent_CompleteItemDtoList();
-        // register to redisCache
-        redisUtilService.registerCache(cacheName,cacheKey, data );
+        //register to Redis Cache. But, manually update the newly added flower
+
+        redisUtilService.registerCache_override(cacheName,cacheKey, data );
 
 
        log.info("deliverable"+ flowerDto.isDelivery());
@@ -102,20 +108,30 @@ public class ItemService {
     }
 
     public void relateAccToFlowerService(Long flower_id, Long acc_id) throws DataNotFoundException {
-
+      Acc targetAcc= accRepository.findById(acc_id).orElseThrow(()-> new DataNotFoundException("acc not found"));
         CompleteItem completeItem = CompleteItem.builder()
                 .flower(flowerRepository.findById(flower_id).orElseThrow(()-> new DataNotFoundException("flower not found")))
-                .acc( accRepository.findById(acc_id).orElseThrow(()-> new DataNotFoundException("acc not found")))
+                .acc(targetAcc)
                 .build();
 
        completeItemRepository.save(completeItem);
 
-        log.info("updating cache with newly linked flower <-> Acc");
-        // forming dto
-        List<CompleteItemDto> data =
-                generate_recent_CompleteItemDtoList();
-        // register to redisCache
-        redisUtilService.registerCache_override(cacheName,cacheKey, data );
+//       // flush from persistContext to acutal db
+            entityManager.flush();
+
+        //even though we flush the data, persistence context won't be commited until transaction done. So, we need to refresh
+        //the flower Repository to use generate_recent_CompletItemDtoList() method with updated acc
+        entityManager.refresh(flowerRepository.findById(flower_id).orElse(null));
+
+
+                log.info("updating cache with newly linked flower <-> Acc");
+                // forming dto
+                List<CompleteItemDto> data =
+                        generate_recent_CompleteItemDtoList();
+
+
+                // register to redisCache
+                redisUtilService.registerCache_override(cacheName,cacheKey, data );
 
 
     }
@@ -127,12 +143,13 @@ public class ItemService {
     public void deleteTargetAcc(Long acc_id) throws DataNotFoundException {
 
         //    List<CompleteItem> targets = completeItemRepository.findAllByAcc_Id(acc_id);
-        Acc target = accRepository.findById(acc_id).orElseThrow(()-> new DataNotFoundException("flower not found"));
+        Acc target = accRepository.findById(acc_id).orElseThrow(()-> new DataNotFoundException("acc not found"));
         log.info("targetAcc = "+target.getName());
         // CompleteItem only with assigned acc_id
         // remove relationship by removing child's pk of parent
         // accesss child from parent's List<Acc>
-        target.getCompleteItemList().stream().forEach(e->e.removeAcc());
+        target.getCompleteItemList().stream().forEach(e->{
+            e.removeAcc();});
 
 //        accRepository.save(target);
 
@@ -144,43 +161,47 @@ public class ItemService {
         accRepository.delete(target);
 
 
+        redisUtilService.registerCache_override(cacheName,cacheKey,generate_recent_CompleteItemDtoList());
+
         //Cache update logic
-        List<CompleteItemDto> completeItemDtoList = null;
-        try {
-            completeItemDtoList = (List<CompleteItemDto>) redisUtilService.fetchingCache(cacheName, cacheKey);
 
-            completeItemDtoList.stream().forEach(completeItemDto->{
-                // filter deleted acc_id
-                completeItemDto.getAccDto().stream().filter(accDto -> accDto.getId() !=acc_id).collect(Collectors.toList());
-            });
-
-
-        } catch (CacheNotFoundException e) {
-            e.printStackTrace();
-            log.info("cache doesn't exist. Generating CompleteItemDto_list from DB");
-            completeItemDtoList = generate_recent_CompleteItemDtoList();
-
-        }
-        finally{
-            if(completeItemDtoList !=null)
-            redisUtilService.registerCache(cacheName,cacheKey,completeItemDtoList);
-        }
+//        List<CompleteItemDto> completeItemDtoList = null;
+//        try {
+//            completeItemDtoList = (List<CompleteItemDto>) redisUtilService.fetchingCache(cacheName, cacheKey);
+//
+//            completeItemDtoList.stream().forEach(completeItemDto->{
+//                // filter deleted acc_id
+//                completeItemDto.getAccDto().stream().filter(accDto -> accDto.getId() !=acc_id).collect(Collectors.toList());
+//            });
+//
+//
+//        } catch (CacheNotFoundException e) {
+//            e.printStackTrace();
+//            log.info("cache doesn't exist. Generating CompleteItemDto_list from DB");
+//            completeItemDtoList = generate_recent_CompleteItemDtoList();
+//
+//        }
+//        finally{
+//            if(completeItemDtoList !=null)
+//            redisUtilService.registerCache_override(cacheName,cacheKey,completeItemDtoList);
+//        }
 
     }
 
     //completely remove flower
     public void complete_remove_flower(Long flower_id) throws DataNotFoundException {
+
+
         Flower target = flowerRepository.findById(flower_id).orElseThrow(()->new DataNotFoundException("flower not found"));
 
         // 1. get completeItem List from target flower
         List<CompleteItem> completeItemList = target.getCompleteItemList();
-        // 2. null all the acc relationship
-        completeItemList.forEach(CompleteItem::removeAcc);
-        // 3. clear the List<CompleteItem> = remove relationship to completeItem
-        completeItemList.clear();
-        flowerRepository.save(target);
+        // 2. just delete child, completeITem related to flower(direct deletion)
+        completeItemList.forEach(completeItem -> completeItemRepository.delete(completeItem));
+
         // 4. remove the target flower
         flowerRepository.delete(target);
+
 
         log.info("updating cache with removed flower");
         // forming dto
@@ -209,6 +230,10 @@ public class ItemService {
         Flower flower = flowerRepository.findById(flower_id).orElseThrow(()-> new DataNotFoundException("flower not found"));
         flowerRepository.delete(flower);
 
+        // cache update
+        List<CompleteItemDto> data =
+                generate_recent_CompleteItemDtoList();
+        redisUtilService.registerCache_override(cacheName,cacheKey,data);
     }
 
 
@@ -226,11 +251,21 @@ public class ItemService {
         });
 
         log.info("updating cache with removed flower");
+
         // forming dto
         List<CompleteItemDto> data =
                 generate_recent_CompleteItemDtoList();
-        // register to redisCache
-        redisUtilService.registerCache_override(cacheName,cacheKey, data );
+
+
+
+
+
+
+
+
+                redisUtilService.registerCache_override(cacheName,cacheKey,data);
+
+
 
     }
 
@@ -285,6 +320,7 @@ public class ItemService {
         } catch (CacheNotFoundException e) {
             e.printStackTrace();
             log.info("cache not found. searching DB");
+
             // forming dto
             List<CompleteItemDto> data =
                     generate_recent_CompleteItemDtoList();
@@ -304,20 +340,36 @@ public class ItemService {
 
     // generate_recentCompleteItemDtoList with DB(Not from Cache)
     private List<CompleteItemDto> generate_recent_CompleteItemDtoList(){
-        return  flowerRepository.findAll().stream().map(flower->
-                CompleteItemDto.builder()
+
+        log.info("Generate most recent CompleteItemDtoList from DB");
+
+
+        return  flowerRepository.findAll().stream().map(flower->{
+            //if flower is just created and no history of acc relation
+            if(flower.getCompleteItemList()  == null){
+                return CompleteItemDto.builder()
+                        .flowerDto(flower.toFlowerDto())
+                        .accDto(null)
+                        .build();
+            }else{
+                //if flower is just created and has history of acc relation
+                return CompleteItemDto.builder()
                         .flowerDto(flower.toFlowerDto())
                         .accDto(
                                 // extract acc Entities from completeItem -> toAccDto
                                 flower.getCompleteItemList().stream()
                                         .map(completeItem->
-                                        Optional.ofNullable(completeItem.getAcc())
-                                                .map(Acc::toAccDto).orElse(null)
-                                ).filter(Objects::nonNull)
+                                                Optional.ofNullable(completeItem.getAcc())
+                                                        .map(Acc::toAccDto).orElse(null)
+                                        ).filter(Objects::nonNull)
 
                                         .collect(Collectors.toList())
                         )
-                        .build()
+                        .build();
+            }
+
+                }
+
         ).collect(Collectors.toList());
     }
 
