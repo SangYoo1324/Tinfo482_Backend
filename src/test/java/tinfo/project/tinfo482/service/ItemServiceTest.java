@@ -1,8 +1,11 @@
 package tinfo.project.tinfo482.service;
 
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 
+import org.hibernate.Hibernate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,7 +32,7 @@ import java.util.stream.Collectors;
 
 
 @SpringBootTest
-@ActiveProfiles("test")
+//@ActiveProfiles("test")
 @Slf4j
 class ItemServiceTest {
 
@@ -46,8 +49,8 @@ class ItemServiceTest {
     private CompleteItemRepository completeItemRepository;
 
 
-
-
+    @PersistenceContext
+    private EntityManager entityManager;
 
 
 //    @BeforeEach
@@ -138,11 +141,19 @@ class ItemServiceTest {
     @Test
     @DisplayName("get all complete item with recommended accs list")
     public void get_all_completeItem_from_flower(){
-        Flower flower = flowerRepository.findById(2l).orElse(null);
+//        Flower flower = flowerRepository.findById(2l).orElse(null);
+//        String jpql = "Select f from Flower f left join fetch f.completeItemList where f.id = :id";
+//
+//        Flower flower = entityManager.createQuery(jpql, Flower.class)
+//                .setParameter("id", 2l).getSingleResult();
+//        List<CompleteItem> completeItemList = flower.getCompleteItemList();
 
-        flower.getCompleteItemList().stream().forEach((e)->{
-            log.info(e.getAcc().getName());
-        });
+        flowerRepository.findAll();
+
+
+//        completeItemList.stream().forEach((e)->{
+//            log.info(e.getAcc().getName());
+//        });
     }
 
     @Test

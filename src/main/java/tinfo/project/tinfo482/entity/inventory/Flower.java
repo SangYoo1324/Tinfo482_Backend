@@ -6,15 +6,15 @@ import lombok.*;
 import tinfo.project.tinfo482.dto.inventory.AccDto;
 import tinfo.project.tinfo482.dto.inventory.FlowerDto;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Data
 @NoArgsConstructor
-
 @DiscriminatorValue("flower_indicator")
-public class Flower extends Item{
+public class Flower extends Item {
 
     //Birthday, Wedding, Graduation etc...
     private String category;
@@ -24,7 +24,7 @@ public class Flower extends Item{
     private String content;
 
 
-    @OneToMany(mappedBy = "flower", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "flower", fetch = FetchType.EAGER)
     private List<CompleteItem> completeItemList = new ArrayList<CompleteItem>();
 
     @Builder

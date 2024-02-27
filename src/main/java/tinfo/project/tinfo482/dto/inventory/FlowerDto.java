@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FlowerDto {
+public class FlowerDto extends ItemDto{
 
     private Long id;
 

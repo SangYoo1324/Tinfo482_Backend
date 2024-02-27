@@ -25,7 +25,6 @@ public class CompleteItem {
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name="acc_id", referencedColumnName = "id", nullable = true)
-
     private Acc acc;
 
 
