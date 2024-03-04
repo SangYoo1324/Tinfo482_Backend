@@ -144,7 +144,7 @@ public class TransactionService {
                         .build());
 
         this.sendEmailAfterTransaction(receipt);
-
+        cartRepository.deleteAllByMember_Id(member_id);
         return receipt.toReceiptDto();
     }
 
