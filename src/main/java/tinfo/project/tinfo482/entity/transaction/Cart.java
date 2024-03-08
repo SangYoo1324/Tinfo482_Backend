@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import tinfo.project.tinfo482.dto.inventory.FlowerDto;
 import tinfo.project.tinfo482.dto.inventory.ItemDto;
 import tinfo.project.tinfo482.dto.transaction.CartDto;
@@ -39,6 +40,8 @@ public class Cart {
     @JoinColumn(name="bundle_id", referencedColumnName = "id", nullable = true)
     private CartBundle cartBundle;
 
+    @ColumnDefault("false")
+    private boolean transaction;
 
     public CartDto toCartDto(int quantity, Long bundleId){
         ItemDto itemDto = null;

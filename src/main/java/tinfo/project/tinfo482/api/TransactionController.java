@@ -7,7 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tinfo.project.tinfo482.config.CustomItemDtoDeserializer;
@@ -89,8 +91,12 @@ public class TransactionController {
 
         log.info("cartDtoList::::::"+cartBundleDto1.toString());
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("filename", "example.pdf");
+
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(transactionService.generateReceipt(cartBundleDto1,user_id));
+            return ResponseEntity.status(HttpStatus.OK).headers(headers).body(transactionService.generateReceipt(cartBundleDto1,user_id));
         } catch (DataNotFoundException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorDto.builder().description("cannot find Dto"));

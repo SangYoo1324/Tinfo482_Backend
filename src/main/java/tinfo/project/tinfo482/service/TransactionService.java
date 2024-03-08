@@ -120,7 +120,7 @@ public class TransactionService {
     }
 
     // generate receipt
-    public ReceiptDto generateReceipt(CartBundleDto cartBundleDto, Long member_id) throws DataNotFoundException {
+    public byte[] generateReceipt(CartBundleDto cartBundleDto, Long member_id) throws DataNotFoundException {
        CartBundle cartBundle = this.generateCartBundle(cartBundleDto, member_id);
         Member member = memberRepository.findById(member_id).orElseThrow(()->new DataNotFoundException("Cannot find Member"));
         AtomicReference<Float> subtotal = new AtomicReference<>((float) 0);
@@ -143,22 +143,27 @@ public class TransactionService {
                         .subTotal(subtotal.get())
                         .build());
 
-        this.sendEmailAfterTransaction(receipt);
-        cartRepository.deleteAllByMember_Id(member_id);
-        return receipt.toReceiptDto();
+
+
+//        this.sendEmailAfterTransaction(receipt);
+
+
+        //cartList clear
+
+
+//        cartBundle.getCartList().stream().forEach(cart->{
+//            cart.setTransaction(true);
+//        });
+
+
+        return mailService.pdfGenerator(receipt);
     }
 
 
     // email sender
     private void sendEmailAfterTransaction(Receipt receipt){
-        String message = "<html lang=\"en\">\n" +
-                "<head>\n" +
-                "    <meta charset=\"UTF-8\">\n" +
-                "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
-                "    <title>Document</title>\n" +
-                "</head>\n" +
-                "<body>\n" +
-                "    \n" +
+        String message =
+
                 "    <h1>Thanks for your Purchase!</h1>\n" +
                 "\n" +
                 "    <div class=\"receipt\">\n" +
@@ -168,9 +173,6 @@ public class TransactionService {
                 "        <div class=\"email\"> Email Address: "+receipt.getMember().getEmail()+"</div>\n" +
                 "        <div class=\"date\"> Date of Purchase: "+receipt.getDate()+"</div>\n" +
                 "    </div>\n" +
-                "\n" +
-                "\n" +
-                "</body>\n" +
                 "<style>\n" +
                 "    h1{\n" +
                 "        text-align: center;\n" +
@@ -207,8 +209,8 @@ public class TransactionService {
                 ".email {\n" +
                 "font-style: italic;\n" +
                 "}\n" +
-                "</style>\n" +
-                "</html>";
+                "</style>\n"
+           ;
         mailService.sendMail(
                 MailDto.builder()
                         .message(message)
@@ -227,7 +229,7 @@ public class TransactionService {
     // fetch current carts by userId
     public List<CartDto> fetchCartDtosByMemberId(Long member_id){
 
-        List<Cart> carts = cartRepository.findCartByMember_Id(member_id);
+        List<Cart> carts = cartRepository.findAllByMember_IdAndTransactionFalse(member_id);
         List<CartDto> cartDtos = carts.stream().map((cart)->{
             return cart.toCartDto(cart.getQuantity(),null);
         }).collect(Collectors.toList());

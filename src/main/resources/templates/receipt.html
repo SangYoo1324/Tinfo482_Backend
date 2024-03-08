@@ -1,0 +1,192 @@
+
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Product List</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<h1>Product List</h1>-->
+<!--<table>-->
+<!--    <thead>-->
+<!--    <tr>-->
+<!--        <th>Name</th>-->
+<!--        <th>Price</th>-->
+<!--    </tr>-->
+<!--    </thead>-->
+<!--    <tbody>-->
+<!--    &lt;!&ndash; 리스트를 반복하여 각 요소를 테이블 행으로 출력 &ndash;&gt;-->
+<!--    <tr th:each="product : ${products}">-->
+<!--        <td th:text="${product.name}"></td>-->
+<!--        <td th:text="${product.price}"></td>-->
+<!--    </tr>-->
+<!--    </tbody>-->
+<!--</table>-->
+<!--</body>-->
+<!--</html>-->
+
+
+<!DOCTYPE html>
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        style="background: #fff; font-family: 'Avenir Next', Avenir, Roboto, 'Century Gothic', 'Franklin Gothic Medium', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-style: normal">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="UTF-8">
+    <title>Blue Bottle Coffee</title>
+</head>
+
+<body style="background: #fff; margin: 0; max-width: 100%; padding: 0; width: 100%" bgcolor="#fff">
+<style type="text/css">
+    body {
+        background: #fff; margin: 0; max-width: 100%; padding: 0; width: 100%;
+    }
+    img {
+        border: 0; outline: none; text-decoration: none;
+    }
+</style>
+<table style="background: #fff; margin-left: auto; margin-right: auto; max-width: 768px; padding: 0 20px; width: 100%" bgcolor="#fff">
+    <tr>
+        <td>
+            <table class="tc" style="background: #fff; margin-left: auto; margin-right: auto; max-width: 768px; text-align: center; width: 100%" bgcolor="#fff">
+                <tr>
+                    <td>
+                        <a href="">
+                            <img style="border: 0; display: inline-block; margin: 20px 0; outline: none; text-decoration: none" alt="Blue Bottle Logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7P_xrGy7pxVniRq_mJmPlfxgk9MpMC4FvFc07TxRc-Q&s">
+                        </a>
+                    </td>
+                </tr>
+            </table>
+            <table style="background: #fff; border: 1px solid #ccc; border-collapse: separate; border-radius: 3px; margin-left: auto; margin-right: auto; max-width: 768px; padding: 60px 40px; width: 100%" bgcolor="#fff">
+                <tr class="tc" style="text-align: center" align="center">
+                    <td class="f36 lh-title" style="font-size: 36px; line-height: 1.2">Order Confirmation</td>
+                </tr>
+                <tr class="tc" style="text-align: center" align="center">
+                    <td class="f18" style="font-size: 18px">
+                        <p style="margin-bottom: 35px">We received your order and we’ll let you know when we ship it out.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="f18" style="border-collapse: collapse; border-top-color: #e5e5e5; border-top-style: solid; border-top-width: 1px; font-size: 18px; padding: 35px 0 0">
+                        <p style="font-weight: 500; margin: 0">Your Order track # <span th:text="${products.id}"></span></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 100%">
+                        <table class="f18" style="background: #fff; border-collapse: collapse; border-top-color: #e5e5e5; border-top-style: solid; border-top-width: 1px; font-size: 18px; margin: 20px 0 30px; max-width: 768px; padding: 20px 0; width: 100%" bgcolor="#fff">
+
+<!--                            items-->
+                            <tr th:each="product : ${products.cartBundleDto.cartDtos}" style="border-bottom-color: #e5e5e5; border-bottom-style: solid; border-bottom-width: 1px; border-collapse: separate">
+                                <td class="tl" style="padding: 20px 0; width: 30%">1<span style="color: #999999; padding: 0 10px" th:text="${product.id}"></span>
+                                    <img width="140" style="border: 0; display: inline-block; max-width: 80%; outline: none; text-decoration: none; vertical-align: middle" th:src="${product.itemDto.img_url}" alt="Gkulf1rrdgr9fvft1xr3">
+                                </td>
+                                <td style="padding: 20px 0 20px 10px; width: 70%"><span th:text="${product.itemDto.name}"></span><span th:text="${product.itemDto.price}" style="float: right"></span>
+
+                                </td>
+                            </tr>
+                            <!--    <tr th:each="product : ${products}">-->
+                            <!--        <td th:text="${product.name}"></td>-->
+                            <!--        <td th:text="${product.price}"></td>-->
+                            <!--    </tr>-->
+
+                            <!--                            items-->
+                        </table>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="f18 lh-copy" style="font-size: 18px; line-height: 1.4">To: <span th:text="${products.username}"></span></td>
+                </tr>
+                <tr>
+                    <td class="f18 lh-copy" style="font-size: 18px; line-height: 1.4">From: Terra Treasures</td>
+                </tr>
+                <tr>
+                    <td class="f18 lh-copy" style="border-bottom-color: #e5e5e5; border-bottom-style: solid; border-bottom-width: 1px; border-collapse: collapse; font-size: 18px; font-style: italic; line-height: 1.4; padding: 0 0 30px"></td>
+                </tr>
+                <tr>
+                    <td style="padding-top: 30px"></td>
+                </tr>
+                <tr>
+                    <td>
+                        <table style="background: #fff; margin-left: auto; margin-right: auto; max-width: 768px; padding-bottom: 30px; width: 100%" bgcolor="#fff">
+                            <tr>
+                                <td class="f18" style="font-size: 18px; vertical-align: top; width: 50%" valign="top">
+                                    <p class="bold" style="font-weight: 600; margin: 0 0 10px">Shipping Address</p>
+                                    <div class="lh-copy" style="line-height: 1.4">
+                                        <br><span th:text="${products.addressDto.address1}">
+                                        <br><span th:text="${products.addressDto.city}"></span>, <span th:text="${products.addressDto.state}"></span>,
+                                        <br><span th:text="${products.addressDto.zipCode}"></span></div>
+                                <td class="f18" style="font-size: 18px; vertical-align: top; width: 50%" valign="top">
+                                    <p class="bold" style="font-weight: 600; margin: 0 0 10px">Details</p>
+                                    <div class="lh-copy" style="line-height: 1.4">Subtotal <span style="float: right" th:text="${products.subTotal}"></span><span style="float: right">$</span>
+
+                                    </div>
+                                    <div class="lh-copy" style="line-height: 1.4">Tax: <span style="float: right" th:text="${products.subTotal/10}"></span>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr class="tc" style="text-align: center" align="center">
+                    <td class="f18 lh-copy" style="border-collapse: collapse; border-top-color: #e5e5e5; border-top-style: solid; border-top-width: 1px; font-size: 18px; line-height: 1.4; padding: 30px 0 0">
+                        <span style="color: #999999; padding: 0 0 10px">Order Total</span>
+                        <br><span th:text="${#numbers.formatCurrency(((products.subTotal+ products.tax)).intValue())}"></span>
+<!--                        <span class="f36 bold" style="font-size: 36px; font-weight: 600">$</span>-->
+
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-top: 30px"></td>
+                </tr>
+                <tr class="tc" style="text-align: center" align="center">
+                    <td class="f24 lh-title" style="border-collapse: separate; border-top-color: #e5e5e5; border-top-style: solid; border-top-width: 1px; font-size: 24px; line-height: 1.2; padding: 30px 0 15px">Keep in Touch</td>
+                </tr>
+                <tr class="tc" style="text-align: center" align="center">
+                    <td class="f18 lh-copy" style="font-size: 18px; line-height: 1.4">If you have any questions, concerns, or suggestions,
+                        <br>please email us:
+                        <a href="mailto:support@bluebottlecoffee.com">support@terraTreasures.com</a>
+                    </td>
+                </tr>
+                <tr class="tc" style="text-align: center" align="center">
+<!--                    <td style="padding-top: 30px">-->
+<!--                        <a style="display: inline-block" href="https://twitter.com/bluebottleroast">-->
+<!--                            <img style="border: 0; display: inline-block; outline: none; text-decoration: none" alt="Twitter logo" src="https://d1yzzccmb3krkj.cloudfront.net/assets/email/twitter-449e556f335ad1854ea6dee8e76c2eb6cb128d4c8180baab8882fcf5786d5199.jpg">-->
+<!--                        </a>-->
+<!--                        <a style="display: inline-block; padding: 0 25px" href="https://www.facebook.com/bluebottlecoffee">-->
+<!--                            <img style="border: 0; display: inline-block; outline: none; text-decoration: none" alt="Facebook logo" src="https://d1yzzccmb3krkj.cloudfront.net/assets/email/facebook-f4b4e236e0f00d4f7a9e1473713d8d28ecfb648de9b9ea2a769781f1ea12759c.jpg">-->
+<!--                        </a>-->
+<!--                        <a style="display: inline-block" href="https://www.instagram.com/bluebottle/">-->
+<!--                            <img style="border: 0; display: inline-block; outline: none; text-decoration: none" alt="Instagram logo" src="https://d1yzzccmb3krkj.cloudfront.net/assets/email/instagram-3a244853b61014407111f5d8a29bd2874681b01ca32e172c322c6b7a2bb79d83.jpg">-->
+<!--                        </a>-->
+<!--                    </td>-->
+                </tr>
+            </table>
+            <table class="tc" style="background: #fff; margin: 30px auto; max-width: 768px; text-align: center; width: 100%" bgcolor="#fff">
+                <tr>
+                    <td class="f14" style="font-size: 14px">© 2016 <span style="font-weight: 600">TERRA TREASURES</span> FLOWER SHOP Inc., All rights reserved.
+                    </td>
+                </tr>
+                <tr>
+                    <td class="f14" style="color: #999999; font-size: 14px">1444 Tacoma Street, Tacoma, WA 98100</td>
+                </tr>
+                <tr>
+                    <td>
+<!--                        <a href="https://bluebottlecoffee.com/">-->
+<!--                            <img style="border: 0; display: inline-block; margin-top: 30px; outline: none; text-decoration: none" alt="Blue Bottle Logo" src="https://d1yzzccmb3krkj.cloudfront.net/assets/email/logo-no-text-b3c50f3a9c0fee07703c591cf3033932212c9aeeb788922ca6567890805cade5.jpg">-->
+<!--                        </a>-->
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+<!--<img height="1" src="http://bluebottlecoffee.com/email_opens/1385647?auth=cb72c503253a8f339352b0cc22df5ae4" width="1" style="border: 0; outline: none; text-decoration: none">-->
+<!--<img src="http://lnk.bluebottlecoffee.com/wf/open?upn=eLFMrKDT8iBxZ-2Fbnk-2BZqvSCGqnlXoiOVynEEWZ2l3MEn-2Bgt-2Fh14TRj7twDJKSnHTHLPsVWOVjCmt1HIts1TtfRc32WEF-2Bxq8EnYqjos3dybXpGndYAyUIhVlrAAXoHwg-2BgEPE9wzsGee-2BvVN-2B7Wsi69ZNnJQGACMXcXrgO8u2cR9j9rgmGVE-2B4R2hvVMnjpCqpPVRCK2kkJAVK64xwyeZGwGgE1wzjv7F-2FKllHj7kaY-3D"-->
+<!--     alt="" width="1" height="1" border="0" style="height:1px !important;width:1px !important;border-width:0 !important;margin-top:0 !important;margin-bottom:0 !important;margin-right:0 !important;margin-left:0 !important;padding-top:0 !important;padding-bottom:0 !important;padding-right:0 !important;padding-left:0 !important;"-->
+<!--/>-->
+</body>
+
+</html>
