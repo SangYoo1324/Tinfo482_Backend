@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import tinfo.project.tinfo482.dto.transaction.CartBundleDto;
 import tinfo.project.tinfo482.dto.transaction.CartDto;
 import tinfo.project.tinfo482.dto.transaction.ReceiptDto;
@@ -217,7 +218,7 @@ public class TransactionService {
                         .subject("Thanks for your Purchase! - Terra Treasures")
                         .to(receipt.getMember().getEmail())
                         .build(),
-                null
+                (MultipartFile) null
         );
     }
 

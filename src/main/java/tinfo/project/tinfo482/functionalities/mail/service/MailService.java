@@ -7,10 +7,14 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import io.micrometer.observation.Observation;
 import jakarta.activation.DataSource;
 import jakarta.mail.MessagingException;
+import jakarta.mail.Multipart;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.util.ByteArrayDataSource;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -26,6 +30,7 @@ import tinfo.project.tinfo482.functionalities.mail.dto.MailDto;
 import tinfo.project.tinfo482.functionalities.redis.RedisUtilService;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -63,6 +68,36 @@ public class MailService {
             throw new RuntimeException(e);
         }
     }
+
+
+    public void sendMail_byteArray(MailDto mailDto, byte[] bytesArray){
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        try{
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true,"UTF-8");
+            mimeMessageHelper.setTo(mailDto.getTo());
+            mimeMessageHelper.setFrom("no-reply");
+            mimeMessageHelper.setSubject(mailDto.getSubject());
+            mimeMessageHelper.setText(mailDto.getMessage(),true);
+
+            // file attachment(only multipartFileList not null)
+
+
+            if(bytesArray !=null){
+                mimeMessageHelper.addAttachment("attachment.pdf", new InputStreamSource() {
+                    @Override
+                    public InputStream getInputStream() throws IOException {
+                        return new ByteArrayInputStream(bytesArray);
+                    }
+                });
+            }
+            javaMailSender.send(mimeMessage);
+            log.info("Email Successfully sent to"+mimeMessage.getReplyTo());
+        }catch(MessagingException e){
+            log.info("fail to send email");
+            throw new RuntimeException(e);
+        }
+    }
+
     // currently only accept receivers  with 1 element
     public void sendDirectMail(MailDto mailDto, List<String> receivers){
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
@@ -113,6 +148,8 @@ public class MailService {
             redisUtilService.setDataExpire(authKey, email, 60 * 5L);
     }
 
+
+    //generate pdf & send email
     public byte[] pdfGenerator(Receipt receipt){
 
 
@@ -135,7 +172,72 @@ public class MailService {
 
         byte[] pdfBytes = baos.toByteArray();
 
+
+
+        sendMail_byteArray(MailDto.builder().subject("Purchase Confirmation: ")
+                .to(receipt.getMember().getEmail()).message("Thanks for your business")
+                .build(), pdfBytes);
+
+
         return pdfBytes;
+
+    }
+
+    public MultipartFile createMultipartFile(byte[] bytes, String filename, String contentType){
+
+        ByteArrayResource resource = new ByteArrayResource(bytes){
+            @Override
+            public String getFilename() {
+                return filename;
+            }
+
+
+            public String getContentType() {
+                return contentType;
+            }
+        };
+
+        return new MultipartFile() {
+            @Override
+            public String getName() {
+                return null;
+            }
+
+            @Override
+            public String getOriginalFilename() {
+                return filename;
+            }
+
+            @Override
+            public String getContentType() {
+                return contentType;
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return false;
+            }
+
+            @Override
+            public long getSize() {
+                return bytes.length;
+            }
+
+            @Override
+            public byte[] getBytes() throws IOException {
+                return bytes;
+            }
+
+            @Override
+            public InputStream getInputStream() throws IOException {
+                return new ByteArrayInputStream(bytes);
+            }
+
+            @Override
+            public void transferTo(File dest) throws IOException, IllegalStateException {
+                Files.write(dest.toPath(),bytes);
+            }
+        };
 
     }
 
