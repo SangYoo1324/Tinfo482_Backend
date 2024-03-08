@@ -152,9 +152,9 @@ public class TransactionService {
         //cartList clear
 
 
-//        cartBundle.getCartList().stream().forEach(cart->{
-//            cart.setTransaction(true);
-//        });
+        cartBundle.getCartList().stream().forEach(cart->{
+            cart.setTransaction(true);
+        });
 
 
         return mailService.pdfGenerator(receipt);

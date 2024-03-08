@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tinfo.project.tinfo482.functionalities.mail.dto.MailDto;
+import tinfo.project.tinfo482.functionalities.mail.service.AWSEmailService;
 import tinfo.project.tinfo482.functionalities.mail.service.MailService;
 
 import java.util.ArrayList;
@@ -20,12 +21,20 @@ public class MailApiController {
 
     private final MailService mailService;
 
+    private final AWSEmailService awsEmailService;
+
     @PostMapping("/send")
     public String sendSimpleMail(@RequestBody MailDto mailDto){
         List<String> receivers = new ArrayList<String>();
         receivers.add(mailDto.getTo());
      mailService.sendDirectMail(mailDto, receivers);
      return "Email successfully sent to "+ mailDto.getTo();
+    }
+
+    @PostMapping("/ses/send")
+    public String sendSimpleSESMail(@RequestBody MailDto mailDto){
+        awsEmailService.sendEmail(mailDto);
+        return "Email successfully sent to "+ mailDto.getTo();
     }
 
 }

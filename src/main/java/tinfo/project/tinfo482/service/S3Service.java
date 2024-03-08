@@ -8,12 +8,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import tinfo.project.tinfo482.config.S3Config;
+import tinfo.project.tinfo482.config.AWSConfig;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.UUID;
 
 @Service
@@ -22,7 +20,7 @@ import java.util.UUID;
 @Slf4j
 public class S3Service {
 
-    private final S3Config s3Config;
+    private final AWSConfig s3Config;
 //    private String localLocation = "C:\\Users\\samue\\Downloads\\";
     @Value("${s3.local.path}")
     private String localLocation;
