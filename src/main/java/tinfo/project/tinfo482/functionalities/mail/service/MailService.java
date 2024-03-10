@@ -150,11 +150,7 @@ public class MailService {
 
 
     //generate pdf & send email
-    public byte[] pdfGenerator(Receipt receipt){
-
-
-
-
+    public byte[] receiptPdfGenerator(Receipt receipt){
 
         Context context = new Context();
         context.setVariable("products",   receipt.toReceiptDto());
@@ -172,12 +168,9 @@ public class MailService {
 
         byte[] pdfBytes = baos.toByteArray();
 
-
-
         sendMail_byteArray(MailDto.builder().subject("Purchase Confirmation: ")
                 .to(receipt.getMember().getEmail()).message("Thanks for your business")
                 .build(), pdfBytes);
-
 
         return pdfBytes;
 

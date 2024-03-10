@@ -30,7 +30,7 @@ public class Cart {
     @JoinColumn(name="member_id", referencedColumnName = "id", nullable = false)
     private Member member ;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name="item_id", referencedColumnName = "id", nullable = false)
     private Item item;
 
