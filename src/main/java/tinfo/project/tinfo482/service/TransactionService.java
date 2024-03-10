@@ -157,7 +157,7 @@ public class TransactionService {
         });
 
 
-        return mailService.pdfGenerator(receipt);
+        return mailService.receiptPdfGenerator(receipt);
     }
 
 
