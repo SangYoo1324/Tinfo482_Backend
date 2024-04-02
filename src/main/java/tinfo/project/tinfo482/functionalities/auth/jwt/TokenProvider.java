@@ -87,10 +87,10 @@ public class TokenProvider {
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
 
-        log.info("Attributes Details:::" + authentication.getDetails());
-        log.info("Attributes principal::::::::::::::::::::::::::"+authentication.getPrincipal());
-        log.info("Attributes name::::::::::::::::::::::::::"+authentication.getName());
-        log.info("Generated Token:::"+ accessToken);
+//        log.info("Attributes Details:::" + authentication.getDetails());
+//        log.info("Attributes principal::::::::::::::::::::::::::"+authentication.getPrincipal());
+//        log.info("Attributes name::::::::::::::::::::::::::"+authentication.getName());
+//        log.info("Generated Token:::"+ accessToken);
 
         Member currentMember =  memberRepository.findByUsername(authentication.getName())
                 .orElseThrow(()->new Exception("cannot find nickname with Authentication.getName"));

@@ -196,7 +196,20 @@
 			<version>1.12.674</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-workmail -->
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-workmail</artifactId>
+			<version>1.12.691</version>
+		</dependency>
+
+
 	</dependencies>
+
+
+
+
+
 
 
 	<build>
